@@ -1,38 +1,31 @@
 import re
-from turtle import st
-
-from lxml import etree
 import requests
 from bs4 import BeautifulSoup
-import lxml
-from selenium.webdriver.common.by import By
-from collections import OrderedDict
 
-
-data = {
-    'authority': 'remoteok.com',
-    'method': 'GET',
-    'path': '/',
-    'scheme': 'https',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
-    'Cache-Control':'max-age=0',
-    'Cookie': 'ref=https%3A%2F%2Fwww.google.com%2F; new_user=false; visits=3; visit_count=3; adShuffler=1',
-    'Sec-Ch-Ua': '"Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
-    'Sec-Ch-Ua-Mobile': '?0',
-    'Sec-Ch-Ua-Platform': '"Windows"',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'none',
-    'Sec-Fetch-User': '?1',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
-}
+# data = {
+#     'authority': 'remoteok.com',
+#     'method': 'GET',
+#     'path': '/',
+#     'scheme': 'https',
+#     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+#     'Accept-Encoding': 'gzip, deflate, br',
+#     'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+#     'Cache-Control':'max-age=0',
+#     'Cookie': 'ref=https%3A%2F%2Fwww.google.com%2F; new_user=false; visits=3; visit_count=3; adShuffler=1',
+#     'Sec-Ch-Ua': '"Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
+#     'Sec-Ch-Ua-Mobile': '?0',
+#     'Sec-Ch-Ua-Platform': '"Windows"',
+#     'Sec-Fetch-Dest': 'document',
+#     'Sec-Fetch-Mode': 'navigate',
+#     'Sec-Fetch-Site': 'none',
+#     'Sec-Fetch-User': '?1',
+#     'Upgrade-Insecure-Requests': '1',
+#     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
+# }
 url = 'https://remoteok.com/'
 HOST = 'https://remoteok.com'
 
-for i in range(0,40, 20):
+for i in range(0,20, 20):
     url2 = f'https://remoteok.com/?&action=get_jobs&offset={i}'
     data2 = {
         'authority': 'remoteok.com',
@@ -57,8 +50,6 @@ for i in range(0,40, 20):
         r = requests.get(url2, headers=data2)
         soup = BeautifulSoup(r.text, 'html.parser')
         all_blocks = soup.find_all('tr')
-        # title2 = all_blocks.find_all(attrs={'itemprop': 'title'})
-        # print(all_blocks)
         all_data = []
         for i in all_blocks:
             title2 = i.find_all(attrs={'itemprop': 'title'})
@@ -70,45 +61,41 @@ for i in range(0,40, 20):
                 company = b.text.strip()
                 all_data.append(company)
             region2 = i.find_all('div', class_='location')
-            for c in region2:
-                print(c[-1])
-                # salary = re.search(r'💰', str(c))
-                # priv = salary.prev
-                # print(salary)
-                    # pass
-                # else:
-                #     print(c)
-            #
-            #         salary = i.text.strip()
-            #         all_data.append(salary)
-            #     else:
-            #         pass
-
-            # for i in region2:
-                # for b in i:
-                #     region=
-            #     r = re.search(r'💰(.*)$', i)
-            #
-            #     region1 = i.find_previous_siblings(r)
-                # region = i.text.strip()
-                # all_data.append(region)
-            # # print(region2)
-            # salary2 = soup.find_all('div', class_='location')#[1]
+            # for c in region2:
+            # regions = re.findall(r"💰 (.*) 💰", region2, re.DOTALL)
+            #     # each_string = i.find_all(string=re.compile('💃'| '🌏'| '🇪🇺'))
+            #     each_string = re.search(r' 💰 ', c)
+            salary_=[]
+            salary2 = i.find('div', class_='location')#[1]
             # for i in salary2:
-            #     if i and re.search(r'💰', str(i)):
-            #         salary = i.text.strip()
-            #         all_data.append(salary)
-            #     else:
-            #         pass
-            # direction2 = soup.find_all('td', class_='tags')
-            # for i in direction2:
-            #     direction = i.text.strip()
-            #     all_data.append(direction)
-            # post_days2 = soup.find_all('td', class_='time')#.text
-            # for i in post_days2:
-            #     post_days = i.text.strip()
-            #     all_data.append(post_days)
-            # num = re.search(r'data-offset', str(i))
+            #     salary_.append(i)
+            # salary_clear = re.sub(r"[;,\s]", ' ', str(salary2))
+            # print(salary2)
+                # between = re.findall(r"💰(.*)💰", i, re.DOTALL)
+                # print(between)
+                # if i and re.search(r'💰', str(i)):
+                #     # prev = i.find_previous_siblings()
+                #     salary = i.text.strip()
+                #     print()
+                #     all_data.append(salary)
+                # else:
+                #     pass
+            direction2 = i.find_all('td', class_='tags')
+            for e in direction2:
+                direction = e.text.split()
+                all_data.append(direction)
+            post_days2 = i.find_all('td', class_='time')#.text
+            for f in post_days2:
+                post_days = f.text.strip()
+                all_data.append(post_days)
+    except:
+        pass
+
+
+
+
+
+
 
         # print(all_blocks)
         #
@@ -174,8 +161,7 @@ for i in range(0,40, 20):
     #         # for i in job_urls2:
     #         #     if i not in job_urls:
     #         #         job_urls.append(i)
-    except:
-        pass
+
 # data3 = {
 #     ':authority': 'remoteok.com',
 #     ':method':'GET',
