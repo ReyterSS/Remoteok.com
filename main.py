@@ -1,6 +1,11 @@
 import re
 import requests
 from bs4 import BeautifulSoup
+import json
+from collections import OrderedDict
+
+from lxml import etree
+from selenium.webdriver.common.by import By
 
 # data = {
 #     'authority': 'remoteok.com',
@@ -49,118 +54,49 @@ for i in range(0,20, 20):
     try:
         r = requests.get(url2, headers=data2)
         soup = BeautifulSoup(r.text, 'html.parser')
-        all_blocks = soup.find_all('tr')
         all_data = []
-        for i in all_blocks:
-            title2 = i.find_all(attrs={'itemprop': 'title'})
-            for a in title2:
-                title = a.text.strip()
-                all_data.append(title)
-            company2 = i.find_all(attrs={'itemprop':'name'})
-            for b in company2:
-                company = b.text.strip()
-                all_data.append(company)
-            region2 = i.find_all('div', class_='location')
-            # for c in region2:
-            # regions = re.findall(r"💰 (.*) 💰", region2, re.DOTALL)
-            #     # each_string = i.find_all(string=re.compile('💃'| '🌏'| '🇪🇺'))
-            #     each_string = re.search(r' 💰 ', c)
-            salary_=[]
-            salary2 = i.find('div', class_='location')#[1]
-            # for i in salary2:
-            #     salary_.append(i)
-            # salary_clear = re.sub(r"[;,\s]", ' ', str(salary2))
-            # print(salary2)
-                # between = re.findall(r"💰(.*)💰", i, re.DOTALL)
-                # print(between)
-                # if i and re.search(r'💰', str(i)):
-                #     # prev = i.find_previous_siblings()
-                #     salary = i.text.strip()
-                #     print()
-                #     all_data.append(salary)
-                # else:
-                #     pass
-            direction2 = i.find_all('td', class_='tags')
-            for e in direction2:
-                direction = e.text.split()
-                all_data.append(direction)
-            post_days2 = i.find_all('td', class_='time')#.text
-            for f in post_days2:
-                post_days = f.text.strip()
-                all_data.append(post_days)
+        title2 = soup.find_all(attrs={'itemprop': 'title'})
+        for a in title2:
+            title = a.text.strip()
+            all_data.append(title)
+        company2 = soup.find_all(attrs={'itemprop':'name'})#[1:2]
+        for b in company2:
+            company = b.text.strip()
+        salary2 = soup.find_all('div', class_='location')  # [1]
+        for i in salary2:
+            if i and re.search(r'💰', str(i)):
+                salary = i.text.strip()
+                all_data.append(salary)
+            else:
+                pass
+        direction2 = soup.find_all('td', class_='tags')
+        for i in direction2:
+            direction = i.text.strip()
+            all_data.append(direction)
+        vacation_url1 = soup.find_all(attrs={'itemprop':"url"})
+        for d in vacation_url1:
+            vacation_url = HOST + d.get('href')
+            all_data.append(vacation_url)
+
+        post_days2 = soup.find_all('td', class_='time')#.text
+        for i in post_days2:
+            post_days = i.text.strip()
+            all_data.append(post_days)
+        print(all_data)
+        # for i in range(0,60, 1):
+        #     region = soup.find_all('tr')[i]
+        #     loc = region.find_all('div', class_='location')[:-1]
+        #     for row in loc:
+        #         print(row)
+
+            # for i in loc:
+            #     print(i.text)
+        #     loc = i.find(class_='location')
+        #     print(i)
+        # soup2 = region.split('💰')[i]
+
     except:
         pass
-
-
-
-
-
-
-
-        # print(all_blocks)
-        #
-        # title2 = soup.find_all(attrs={'itemprop':'title'})
-        # for i in title2:
-        #     title = i.text.strip()
-        #     all_data.append(title)
-        # company2 = soup.find_all(attrs={'itemprop':'name'})
-        # for i in company2:
-        #     company = i.text.strip()
-        #     all_data.append(company)
-        # region2 = soup.find_all('div', class_='location')
-        # for i in region2:
-        #     print(i)
-        #     # for b in i:
-        #     #     region=
-        # #     r = re.search(r'💰(.*)$', i)
-        # #
-        # #     region1 = i.find_previous_siblings(r)
-        #     # region = i.text.strip()
-        #     # all_data.append(region)
-        # # print(region2)
-        # salary2 = soup.find_all('div', class_='location')#[1]
-        # for i in salary2:
-        #     if i and re.search(r'💰', str(i)):
-        #         salary = i.text.strip()
-        #         all_data.append(salary)
-        #     else:
-        #         pass
-        # direction2 = soup.find_all('td', class_='tags')
-        # for i in direction2:
-        #     direction = i.text.strip()
-        #     all_data.append(direction)
-        # post_days2 = soup.find_all('td', class_='time')#.text
-        # for i in post_days2:
-        #     post_days = i.text.strip()
-        #     all_data.append(post_days)
-        # print(all_data)
-
-
-
-        # print(title, company, region, salary, direction, post_days)
-
-        # dom = etree.HTML(soup)
-        # job = dom.xpath('//*[contains(@tr, "data-offset")]')"a::attr(href)").getall()
-        # job = soup.select('attr~=data-offset')#[attr~=value]
-        # job = re.search(r"job job", str(soup))
-        # print(soup
-        # print(job)
-    #         # dom = etree.HTML(str(soup))
-    #         # main_block = soup.find('div', class_='page')
-    #         # a_b = (dom.xpath('//*[contains(@id, "job")]'))
-    #         # a_b = re.findall(r'data-offset', soup, re.DOTALL)
-    #         # a_b = re.findall(r'job', soup)
-    #         # a_b = re.findall(r'data-offset', soup, flags = re.DOTALL)
-    #         job_urls_block = soup.find_all('a',class_='preventLink')
-    #         # job_urls2 = []
-    #         # job_urls = []
-    #         for i in job_urls_block:
-    #             job_url2 =  i.get('href')
-    #             job_url = HOST + job_url2
-    #         #     job_urls2.append(job_url)
-    #         # for i in job_urls2:
-    #         #     if i not in job_urls:
-    #         #         job_urls.append(i)
 
 # data3 = {
 #     ':authority': 'remoteok.com',
@@ -196,17 +132,5 @@ for i in range(0,20, 20):
         # direction =a_b.find('td', class_='tags').text
         # post_days = a_b.find('td', class_='time').text
         # print(title, company, region, salary, direction, post_days)
-
-
-
-# for i in all_blocks:
-#     block = i.find('data0offset')
-# all_blocks = re.findall(r'data-offset', main_block)
-# (r'of(.*)titles', main_block, re.DOTALL)
-# for i, num in enumerate(main_block, start=1):
-# for i in all_blocks:
-#     name = i.find('a', class_="preventLink").find('title').text
-#     #'@##=By.XPATH, '//*[@class="preventLink"]//*[@*="title"]')
-#     print(i)
 
 
