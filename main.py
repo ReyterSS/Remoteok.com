@@ -2,11 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import regex as re
+from lxml import etree
+import html
+
 
 url = 'https://remoteok.com/'
 HOST = 'https://remoteok.com'
 
-for i in range(0,40, 20):
+for i in range(0, 500, 20):
     url2 = f'https://remoteok.com/?&action=get_jobs&offset={i}'
     data2 = {
         'authority': 'remoteok.com',
@@ -29,10 +32,10 @@ for i in range(0,40, 20):
         }
     if data2:
         r = requests.get(url2, headers=data2)
-        soup = BeautifulSoup(r.content, 'html.parser')
-        all_blocks = soup.find_all('tr')#[:4]
+        soup = BeautifulSoup(r.content, 'lxml')
+        all_blocks = soup.select('[class~=job]')
+        # print(all_blocks)
         for i in all_blocks:
-
             title2 = i.find(attrs={'itemprop': 'title'})#[:1]
             if title2:
                 title = title2.text.strip()
@@ -45,16 +48,16 @@ for i in range(0,40, 20):
                 pass
             salary2 = i.find_all('div', class_='location')  # [1]
             for a in salary2:
-                if a and re.search(r'đ°', str(a)):
+                if a and re.search(r'💰|đ°', str(a)):
                     salary1 = str(a.text)#.strip()
-
                     salary = re.sub("[^$-A-Za-z0-9]", " ", salary1)
                 else:
                     pass
-
             direction2 = i.find_all('h3')[1:]
+            direction = []
             for b in direction2:
-                direction = b.text.strip()
+                direction1 = b.text.strip()
+                direction.append(direction1)
             if i:
                 location2 = i.find_all('div', class_='location')[:-1]
                 location3 = str(location2).replace('[]', '')  # .strip()
@@ -77,20 +80,19 @@ for i in range(0,40, 20):
                 pass
 
             all_data = {'Title2': title,
-                            'Company': company,
-                            'Salary': salary,
-                            'Direction': direction,
-                            'Location': location,
-                            'URL': vacation_url,
-                            'Post days': post_days}
+                        'Company': company,
+                        'Salary': salary,
+                        'Direction': direction,
+                        'Location': location,
+                        'URL': vacation_url,
+                        'Post days': post_days}
             file_name = 'Remoteok.csv'
             with open(file_name, 'a', encoding='utf-8') as f:  # ,encoding='utf-8'
                 w = csv.DictWriter(f, all_data.keys())
                 if f.tell() == 0:
                     w.writeheader()
                 w.writerow(all_data)
-            # print(all_data)
-                # # write_csv(data)
+
     else:
         pass
 
